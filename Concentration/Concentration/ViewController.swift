@@ -22,10 +22,10 @@ class ViewController: UIViewController {
     
     @IBOutlet private var cardButtons: [UIButton]!
     
-    private var emojiChoices: [String]!
-    private var emoji: [Int:String]!
+    private var emojiChoices: String!
+    private var emoji: [Card:String]!
     
-    private var themes = [Theme:[String]]()
+    private var themes = [Theme:String]()
     private var backgrounds = [Theme:[UIColor]]()
     
     private var currentTheme: Theme!
@@ -41,16 +41,19 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         loadThemes()
         loadBackgrounds()
         pickRandomTheme()
         loadBackground()
         loadEmoji()
+        
+        updateFlipCountLabel()
     }
     
     private func loadEmoji() {
         emojiChoices = themes[currentTheme]
-        emoji = [Int:String]()
+        emoji = [Card:String]()
     }
     
     private func pickRandomTheme() {
@@ -76,12 +79,12 @@ class ViewController: UIViewController {
     }
     
     private func loadThemes() {
-        themes[.face] = ["😀", "😃", "😄", "😗", "😘", "😎", "😞", "😡", "😱", "😰"]
-        themes[.hand] = ["🤲", "👏", "🤞", "👈", "👋", "🖖", "🙏", "💪", "👇", "🤘"]
-        themes[.animal] = ["🐶", "🦊", "🐷", "🐧", "🙉", "🐝", "🐢", "🐍", "🦋", "🐴"]
-        themes[.food] = ["🍏", "🍎", "🍉", "🍓", "🥕", "🍅", "🍇", "🍐", "🍞", "🍖"]
-        themes[.sports] = ["⚽️", "🏀", "🏈", "⚾️", "🎾", "🏐", "🎱", "🏓", "🥊", "🏹"]
-        themes[.flag] = ["🇨🇦", "🇨🇳", "🇹🇩", "🇫🇷", "🇯🇵", "🇱🇷", "🇲🇨", "🇳🇪", "🏳️‍🌈", "🇦🇽"]
+        themes[.face] = "😀😃😄😗😘😎😞😡😱😰"
+        themes[.hand] = "🤲👏🤞👈👋🖖🙏💪👇🤘"
+        themes[.animal] = "🐶🦊🐷🐧🙉🐝🐢🐍🦋🐴"
+        themes[.food] = "🍏🍎🍉🍓🥕🍅🍇🍐🍞🍖"
+        themes[.sports] = "⚽️🏀🏈⚾️🎾🏐🎱🏓🥊🏹"
+        themes[.flag] = "🇨🇦🇨🇳🇹🇩🇫🇷🇯🇵🇱🇷🇲🇨🇳🇪🏳️‍🌈🇦🇽"
     }
 
     @IBAction private func cardTapped(_ sender: UIButton) {
@@ -108,9 +111,19 @@ class ViewController: UIViewController {
         updateViewFromModel()
     }
     
+    private func updateFlipCountLabel() {
+        let attributes: [NSAttributedStringKey:Any] = [
+            .strokeWidth : 5.0,
+            .strokeColor : backgrounds[currentTheme]?.last
+        ]
+        
+        let attributedString = NSAttributedString(string: "Flips: \(game.flipCount)", attributes: attributes)
+        flipCountLabel.attributedText = attributedString
+    }
     
     private func updateViewFromModel() {
-        flipCountLabel.text = "Flips: \(game.flipCount)"
+        
+        updateFlipCountLabel()
         scoreLabel.text = "Score: \(game.score)"
         
         for index in cardButtons.indices {
@@ -130,12 +143,12 @@ class ViewController: UIViewController {
     
     private func emoji(for card: Card) -> String {
         
-        if emoji[card.identifier] == nil {
-            let randomIndex = emojiChoices.count.arc4random
-            emoji[card.identifier] = emojiChoices.remove(at: randomIndex)
+        if emoji[card] == nil, emojiChoices.count > 0 {
+            let randomIndex = emojiChoices.index(emojiChoices.startIndex, offsetBy: emojiChoices.count.arc4random)
+            emoji[card] = String(emojiChoices.remove(at: randomIndex))
         }
         
-        return emoji[card.identifier] ?? "?"
+        return emoji[card] ?? "?"
     }
         
 }
