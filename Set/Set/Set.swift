@@ -50,9 +50,23 @@ struct Set {
     
     mutating func dealThreeMoreCards() {
         for _ in 1...3 {
-            if !deck.isEmpty, cards.count < 24 {
+            if !deck.isEmpty {
                 cards.append(deck.removeFirst())
             }
+        }
+    }
+    
+    mutating func shuffleCards() {
+        var selectedCards = [Card]()
+        for index in selectedIndices {
+            selectedCards.append(cards[index])
+        }
+        cards.shuffle()
+        
+        selectedIndices.removeAll()
+        for card in selectedCards {
+            guard let index = cards.index(of: card) else { return }
+            selectedIndices.append(index)
         }
     }
     
@@ -67,7 +81,7 @@ struct Set {
     
     private func isNumberMatched(for cards: [Card]) -> Bool {
         assert(cards.count == 3, "Set.isNumberMatched(for cards: \(cards.description)): you must select three cards to check match")
-        return isSameObject(obj1: cards[0].numberIdentifier, obj2: cards[1].numberIdentifier, obj3: cards[2].numberIdentifier) || isDifferentObject(obj1: cards[0].numberIdentifier, obj2: cards[1].numberIdentifier, obj3: cards[2].numberIdentifier)
+        return isSameObject(obj1: cards[0].countIdentifier, obj2: cards[1].countIdentifier, obj3: cards[2].countIdentifier) || isDifferentObject(obj1: cards[0].countIdentifier, obj2: cards[1].countIdentifier, obj3: cards[2].countIdentifier)
         
     }
     
@@ -97,11 +111,11 @@ struct Set {
 
     init(numberOfCards: Int) {
         
-        for i in 1...3 {
-            for j in 1...3 {
-                for k in 1...3 {
-                    for l in 1...3 {
-                        deck.append(Card(symbolIdentifier: i, shadingIdentifier: j, numberIdentifier: k, colorIdentifier: l))
+        for i in Card.Identifier.allIdentifiers {
+            for j in Card.Identifier.allIdentifiers {
+                for k in Card.Identifier.allIdentifiers {
+                    for l in Card.Identifier.allIdentifiers {
+                        deck.append(Card(symbolIdentifier: i, shadingIdentifier: j, countIdentifier: k, colorIdentifier: l))
                     }
                 }
             }

@@ -10,107 +10,156 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    private(set) lazy var game = Set(numberOfCards: cardButtons.count / 2)
+    private(set) var game = Set(numberOfCards: Constant.startingNumberOfCards)
     
-    private var symbols = [Int:String]()
-    private var colors = [Int:UIColor]()
-    private var shades = [Int:CGFloat]()
+    private var symbols = [Card.Identifier:SetButton.Shape]()
+    private var colors = [Card.Identifier:UIColor]()
+    private var shades = [Card.Identifier:SetButton.Shading]()
     
-    private var symbolChoices = "▲●■"
-    private var colorChoices = [UIColor.black, .red, .blue]
-    private var shadeChoices: [CGFloat] = [1, 0.5, 0.15]
+    private var symbolChoices = SetButton.Shape.allShapes
+    private var colorChoices = [UIColor.green, .red, .purple]
+    private var shadeChoices = SetButton.Shading.allShadings
     
-    @IBOutlet private var cardButtons: [UIButton]!
+    private var cardButtons: [SetButton] = []
+    
     @IBOutlet weak var scoreLabel: UILabel!
     
+    @IBOutlet weak var buttonContainerView: SetButtonsContainerView!
+    
+    lazy var swipeDownGestureRecognizer: UISwipeGestureRecognizer = {
+        let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(dealThreeMoreCards(_:)))
+        swipeDown.direction = .down
+        return swipeDown
+    }()
+    
+    lazy var rotationGestureRecognizer: UIRotationGestureRecognizer = {
+        let rotation = UIRotationGestureRecognizer(target: self, action: #selector(shuffleCards))
+        return rotation
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         updateViewFromModel()
+        
+        view.addGestureRecognizer(swipeDownGestureRecognizer)
+        view.addGestureRecognizer(rotationGestureRecognizer)
+        
     }
     
-    @IBAction private func cardButtonTapped(_ sender: UIButton) {
+    @objc func cardButtonTapped(_ sender: SetButton) {
+
         guard let index = cardButtons.index(of: sender) else { return }
         game.selectCard(at: index)
         updateViewFromModel()
+        
+        if game.deck.isEmpty {
+            sender.isUserInteractionEnabled = false
+            sender.tintColor = .gray
+        }
+        
     }
     
-    @IBAction func dealThreeMoreCardsButtonTapped(_ sender: UIButton) {
+    @IBAction func dealThreeMoreCards(_ sender: Any) {
         game.dealThreeMoreCards()
         updateViewFromModel()
     }
     
+    @objc private func shuffleCards() {
+        game.shuffleCards()
+        updateViewFromModel()
+    }
     
     private func updateViewFromModel() {
         
-        scoreLabel.text = "Score: \(game.score)"
+        updateScoreLabelFromModel()
+        
+        updateCardButtonsCountFromModel()
         
         for index in cardButtons.indices {
+            
             let button = cardButtons[index]
-            if index < game.cards.count {
-                button.isUserInteractionEnabled = true
-                
-                var attributes = [NSAttributedStringKey:Any]()
-                let card = game.cards[index]
-                var symbol = ""
-                
-                if colors[card.colorIdentifier] == nil {
-                    colors[card.colorIdentifier] = colorChoices.remove(at: colorChoices.count.arc4Random)
-                }
-                
-                if shades[card.shadingIdentifier] == nil {
-                    shades[card.shadingIdentifier] = shadeChoices.remove(at: shadeChoices.count.arc4Random)
-                }
-                
-                if symbols[card.symbolIdentifier] == nil {
-                    symbols[card.symbolIdentifier] = String(symbolChoices.remove(at: symbolChoices.index(symbolChoices.startIndex, offsetBy: symbolChoices.count.arc4Random)))
-                }
-                
-                
-                attributes[.strokeColor] = colors[card.colorIdentifier]
-                attributes[.foregroundColor] = colors[card.colorIdentifier]!.withAlphaComponent(shades[card.shadingIdentifier]!)
-                
-                symbol = symbols[card.symbolIdentifier]!
-                var string = ""
-                for _ in 0..<card.numberIdentifier {
-                    string += symbol
-                }
-                
-                button.setAttributedTitle(NSAttributedString(string: string, attributes: attributes), for: .normal)
-                
-                button.layer.cornerRadius = 8.0
-                button.backgroundColor = .white
-                
-                if game.selectedIndices.contains(index) {
-                    button.layer.borderWidth = 3.0
-                    button.layer.borderColor = UIColor.blue.cgColor
-                } else {
-                    button.layer.borderWidth = 0
-                    button.layer.borderColor = nil
-                }
-                
-                
-                
+            let card = game.cards[index]
+            
+            if colors[card.colorIdentifier] == nil {
+                colors[card.colorIdentifier] = colorChoices.remove(at: colorChoices.count.arc4Random)
             }
-            else {
-                button.isUserInteractionEnabled = false
-                button.setAttributedTitle(nil, for: .normal)
-                button.setTitle(nil, for: .normal)
-                button.backgroundColor = nil
-                button.layer.borderWidth = 0
-                button.layer.borderColor = nil
+            
+            if shades[card.shadingIdentifier] == nil {
+                shades[card.shadingIdentifier] = shadeChoices.remove(at: shadeChoices.count.arc4Random)
             }
+            
+            if symbols[card.symbolIdentifier] == nil {
+                symbols[card.symbolIdentifier] = symbolChoices.remove(at: shadeChoices.count.arc4Random)
+            }
+            
+            button.color = colors[card.colorIdentifier]
+            button.shading = shades[card.shadingIdentifier]
+            button.shape = symbols[card.symbolIdentifier]
+            button.count = card.countIdentifier.rawValue
+            button.isSelected = game.selectedIndices.contains(index)
+            
+       
             
             
         }
+        
+        buttonContainerView.buttons = cardButtons
+        
+        
+    }
+    
+    
+    
+    private func updateScoreLabelFromModel() {
+         scoreLabel.text = "Score: \(game.score)"
+    }
+    
+    private func updateCardButtonsCountFromModel() {
+        if cardButtons.count < game.cards.count {
+            for _ in 1...game.cards.count - cardButtons.count {
+                let button = SetButton()
+                button.addTarget(self, action: #selector(cardButtonTapped(_:)), for: .touchUpInside)
+                cardButtons.append(button)
+            }
+        } else if cardButtons.count == game.cards.count {
+            return
+        } else {
+            for _ in 1...cardButtons.count - game.cards.count {
+                cardButtons.removeLast()
+            }
+        }
+    }
+    
+    
+
+
+}
+
+extension ViewController {
+    
+    private struct Constant {
+        static let numberOfColumnsOfButtons: Int = 4
+        static let buttonSpacing: CGFloat = 8.0
+        static let startingNumberOfCards: Int = 12
+    }
+    
+    var numberOfRowsOfButtons: Int {
+        return 1 + (game.cards.count - 1) / Constant.numberOfColumnsOfButtons
+    }
+    
+    var buttonWidth: CGFloat {
+        return (buttonContainerView.bounds.size.width - CGFloat(Constant.numberOfColumnsOfButtons - 1) * Constant.buttonSpacing) / CGFloat(Constant.numberOfColumnsOfButtons)
+    }
+    
+    var buttonHeight: CGFloat {
+        return (buttonContainerView.bounds.size.height - CGFloat(numberOfRowsOfButtons - 1) * Constant.buttonSpacing) / CGFloat(numberOfRowsOfButtons)
     }
     
     
     
     
-
-
+    
 }
 
 extension Int {

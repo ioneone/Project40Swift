@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BF97D61E20ED574600A6F6C6 /* SetButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF97D61D20ED574600A6F6C6 /* SetButton.swift */; };
+		BF9FDCB120EB0C0A00BCFD27 /* SetButtonsContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF9FDCB020EB0C0A00BCFD27 /* SetButtonsContainerView.swift */; };
 		BFEE030520E5CF5100D802D5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFEE030420E5CF5100D802D5 /* AppDelegate.swift */; };
 		BFEE030720E5CF5100D802D5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFEE030620E5CF5100D802D5 /* ViewController.swift */; };
 		BFEE030A20E5CF5100D802D5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFEE030820E5CF5100D802D5 /* Main.storyboard */; };
@@ -17,6 +19,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BF97D61D20ED574600A6F6C6 /* SetButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetButton.swift; sourceTree = "<group>"; };
+		BF9FDCB020EB0C0A00BCFD27 /* SetButtonsContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetButtonsContainerView.swift; sourceTree = "<group>"; };
 		BFEE030120E5CF5100D802D5 /* Set.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Set.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFEE030420E5CF5100D802D5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BFEE030620E5CF5100D802D5 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -66,6 +70,8 @@
 				BFEE031020E5CF5300D802D5 /* Info.plist */,
 				BFEE031620E5D9A200D802D5 /* Card.swift */,
 				BFEE031820E5DA0A00D802D5 /* Set.swift */,
+				BF9FDCB020EB0C0A00BCFD27 /* SetButtonsContainerView.swift */,
+				BF97D61D20ED574600A6F6C6 /* SetButton.swift */,
 			);
 			path = Set;
 			sourceTree = "<group>";
@@ -141,10 +147,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF9FDCB120EB0C0A00BCFD27 /* SetButtonsContainerView.swift in Sources */,
 				BFEE031920E5DA0A00D802D5 /* Set.swift in Sources */,
 				BFEE030720E5CF5100D802D5 /* ViewController.swift in Sources */,
 				BFEE031720E5D9A200D802D5 /* Card.swift in Sources */,
 				BFEE030520E5CF5100D802D5 /* AppDelegate.swift in Sources */,
+				BF97D61E20ED574600A6F6C6 /* SetButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
