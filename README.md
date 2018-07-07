@@ -21,3 +21,12 @@ A project inspired by 100 Days of Swift
 
 #### comment
 Enhance some features from project 2
+
+## Project 4: Animated Set
+<img src="https://user-images.githubusercontent.com/21322866/42412727-a4df8884-81c6-11e8-993e-10f155c5954d.gif" title="set3" width="300">
+
+### reference
+[Stanford CS 193P iPhone Application Development Assignment 3](https://github.com/duliodenis/cs193p-Fall-2017/blob/master/problemsets/Programming_Project_4_Animated_Set.pdf)
+
+#### comment
+Enhance some features from project 3
