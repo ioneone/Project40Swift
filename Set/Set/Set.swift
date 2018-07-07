@@ -14,16 +14,20 @@ struct Set {
     private(set) var cards = [Card]()
     private(set) var selectedIndices = [Int]()
     
+    var previouslyRemovedCardIndices: [Int]?
+    
     private(set) var score = 0
     
     mutating func selectCard(at index: Int) {
+        previouslyRemovedCardIndices = nil
+        
         if selectedIndices.count == 2, !selectedIndices.contains(index) {
             selectedIndices.append(index)
             // TODO: check if matched
-            if isMatched() {
+//            if isMatched() {
                 score += 1
                 removeMatchedCards()
-            }
+//            }
             
             selectedIndices.removeAll()
             
@@ -38,7 +42,6 @@ struct Set {
             }
         }
         
-        
     }
     
     mutating private func removeMatchedCards() {
@@ -46,6 +49,7 @@ struct Set {
         for index in selectedIndices.reversed() {
             cards.remove(at: index)
         }
+        previouslyRemovedCardIndices = selectedIndices
     }
     
     mutating func dealThreeMoreCards() {
@@ -140,7 +144,7 @@ struct Set {
 extension MutableCollection {
     mutating func shuffle() {
         for i in 0..<self.count {
-            let rand = i + (self.count - i).arc4Random
+            let rand = i + (self.count - i).arc4random
             swapAt(index(startIndex, offsetBy: i), index(startIndex, offsetBy: rand))
         }
     }

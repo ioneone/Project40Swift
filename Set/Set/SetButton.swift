@@ -10,11 +10,13 @@ import UIKit
 
 class SetButton: UIButton {
     
-    var shape: Shape? { didSet { setNeedsDisplay(); setNeedsLayout() } }
-    var shading: Shading? { didSet { setNeedsDisplay(); setNeedsLayout()} }
-    var color: UIColor? { didSet { setNeedsDisplay(); setNeedsLayout() } }
+    var shape: Shape? { didSet { setNeedsDisplay() } }
+    var shading: Shading? { didSet { setNeedsDisplay() } }
+    var color: UIColor? { didSet { setNeedsDisplay() } }
     
-    var count: Int? { didSet { setNeedsDisplay(); setNeedsLayout() } }
+    var count: Int? { didSet { setNeedsDisplay() } }
+    
+    var isFaceUp = false { didSet { setNeedsDisplay() } }
     
     override var isSelected: Bool {
         didSet {
@@ -32,6 +34,7 @@ class SetButton: UIButton {
     private var path = UIBezierPath()
     
     override func draw(_ rect: CGRect) {
+        if !isFaceUp { return }
         guard let theShape = shape else { return }
         guard let theShading = shading else { return }
         guard let theColor = color else { return }

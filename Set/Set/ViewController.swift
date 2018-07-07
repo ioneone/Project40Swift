@@ -16,51 +16,49 @@ class ViewController: UIViewController {
     private var colors = [Card.Identifier:UIColor]()
     private var shades = [Card.Identifier:SetButton.Shading]()
     
-    private var symbolChoices = SetButton.Shape.allShapes
-    private var colorChoices = [UIColor.green, .red, .purple]
-    private var shadeChoices = SetButton.Shading.allShadings
-    
-    private var cardButtons: [SetButton] = []
-    
     @IBOutlet weak var scoreLabel: UILabel!
     
     @IBOutlet weak var buttonContainerView: SetButtonsContainerView!
     
-    lazy var swipeDownGestureRecognizer: UISwipeGestureRecognizer = {
-        let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(dealThreeMoreCards(_:)))
-        swipeDown.direction = .down
-        return swipeDown
-    }()
-    
-    lazy var rotationGestureRecognizer: UIRotationGestureRecognizer = {
-        let rotation = UIRotationGestureRecognizer(target: self, action: #selector(shuffleCards))
-        return rotation
-    }()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        updateViewFromModel()
         
-        view.addGestureRecognizer(swipeDownGestureRecognizer)
-        view.addGestureRecognizer(rotationGestureRecognizer)
+        
+        buttonContainerView.deckButton.addTarget(self, action: #selector(dealThreeMoreCards(_:)), for: .touchUpInside)
+        
+        registerCardIdentifiers()
+        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        updateViewFromModel()
+    }
+    
+    private func registerCardIdentifiers() {
+        var symbolChoices = SetButton.Shape.allShapes
+        var colorChoices = [UIColor.green, .red, .purple]
+        var shadeChoices = SetButton.Shading.allShadings
+        
+        for identifier in Card.Identifier.allIdentifiers {
+            symbols[identifier] = symbolChoices.remove(at: symbolChoices.count.arc4random)
+            colors[identifier] = colorChoices.remove(at: colorChoices.count.arc4random)
+            shades[identifier] = shadeChoices.remove(at: shadeChoices.count.arc4random)
+        }
         
     }
     
     @objc func cardButtonTapped(_ sender: SetButton) {
 
-        guard let index = cardButtons.index(of: sender) else { return }
+        guard let index = buttonContainerView.buttons.index(of: sender) else { return }
         game.selectCard(at: index)
         updateViewFromModel()
         
-        if game.deck.isEmpty {
-            sender.isUserInteractionEnabled = false
-            sender.tintColor = .gray
-        }
+        
         
     }
     
-    @IBAction func dealThreeMoreCards(_ sender: Any) {
+    @objc func dealThreeMoreCards(_ sender: UIButton?) {
         game.dealThreeMoreCards()
         updateViewFromModel()
     }
@@ -74,39 +72,16 @@ class ViewController: UIViewController {
         
         updateScoreLabelFromModel()
         
-        updateCardButtonsCountFromModel()
+        updateDealCardsButton()
         
-        for index in cardButtons.indices {
-            
-            let button = cardButtons[index]
-            let card = game.cards[index]
-            
-            if colors[card.colorIdentifier] == nil {
-                colors[card.colorIdentifier] = colorChoices.remove(at: colorChoices.count.arc4Random)
-            }
-            
-            if shades[card.shadingIdentifier] == nil {
-                shades[card.shadingIdentifier] = shadeChoices.remove(at: shadeChoices.count.arc4Random)
-            }
-            
-            if symbols[card.symbolIdentifier] == nil {
-                symbols[card.symbolIdentifier] = symbolChoices.remove(at: shadeChoices.count.arc4Random)
-            }
-            
-            button.color = colors[card.colorIdentifier]
-            button.shading = shades[card.shadingIdentifier]
-            button.shape = symbols[card.symbolIdentifier]
-            button.count = card.countIdentifier.rawValue
-            button.isSelected = game.selectedIndices.contains(index)
-            
-       
-            
-            
+        updateCardButtonsFromModel()
+        
+    }
+    
+    private func updateDealCardsButton() {
+        if game.deck.isEmpty {
+            buttonContainerView.deckButton.isHidden = true
         }
-        
-        buttonContainerView.buttons = cardButtons
-        
-        
     }
     
     
@@ -115,24 +90,40 @@ class ViewController: UIViewController {
          scoreLabel.text = "Score: \(game.score)"
     }
     
-    private func updateCardButtonsCountFromModel() {
-        if cardButtons.count < game.cards.count {
-            for _ in 1...game.cards.count - cardButtons.count {
+    private func updateCardButtonsFromModel() {
+        for index in buttonContainerView.buttons.indices {
+            buttonContainerView.buttons[index].isSelected = game.selectedIndices.contains(index)
+        }
+        
+        if buttonContainerView.buttons.count < game.cards.count {
+            for _ in 1...game.cards.count - buttonContainerView.buttons.count {
                 let button = SetButton()
+                let index = buttonContainerView.buttons.count
+                let card = game.cards[index]
+                            
+                button.color = colors[card.colorIdentifier]
+                button.shading = shades[card.shadingIdentifier]
+                button.shape = symbols[card.symbolIdentifier]
+                button.count = card.countIdentifier.rawValue
+                
                 button.addTarget(self, action: #selector(cardButtonTapped(_:)), for: .touchUpInside)
-                cardButtons.append(button)
+                buttonContainerView.addButton(button)
             }
-        } else if cardButtons.count == game.cards.count {
+        } else if buttonContainerView.buttons.count == game.cards.count {
             return
         } else {
-            for _ in 1...cardButtons.count - game.cards.count {
-                cardButtons.removeLast()
+            guard let indices = game.previouslyRemovedCardIndices else { return }
+            for index in indices.sorted().reversed() {
+                buttonContainerView.removeButton(at: index)
             }
+            assert(buttonContainerView.buttons.count == game.cards.count, "ViewController.updateCardButtonsCountFromModel(): buttonContainerView.buttons.count (\(buttonContainerView.buttons.count)) is not equal to game.cards.count (\(game.cards.count))")
+            
         }
+        
+        buttonContainerView.updateButtonPositions()
+        
+        
     }
-    
-    
-
 
 }
 
@@ -164,7 +155,7 @@ extension ViewController {
 
 extension Int {
     
-    var arc4Random: Int {
+    var arc4random: Int {
         if self > 0 {
             return Int(arc4random_uniform(UInt32(self)))
         } else if self < 0 {
