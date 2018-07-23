@@ -26,7 +26,14 @@ Enhance some features from project 2
 <img src="https://user-images.githubusercontent.com/21322866/42412727-a4df8884-81c6-11e8-993e-10f155c5954d.gif" title="set3" width="300">
 
 ### reference
-[Stanford CS 193P iPhone Application Development Assignment 3](https://github.com/duliodenis/cs193p-Fall-2017/blob/master/problemsets/Programming_Project_4_Animated_Set.pdf)
+[Stanford CS 193P iPhone Application Development Assignment 4](https://github.com/duliodenis/cs193p-Fall-2017/blob/master/problemsets/Programming_Project_4_Animated_Set.pdf)
 
 #### comment
 Enhance some features from project 3
+
+## Project 5: Image Gallery
+<img src="https://user-images.githubusercontent.com/21322866/43107579-9428df4a-8f18-11e8-977a-9796818a7085.gif" title="image-gallery" width="600">
+
+### reference
+[Standford CS 193P iPhone Application Development Assignment 5](https://github.com/duliodenis/cs193p-Fall-2017/blob/master/problemsets/Programming_Project_5_Image_Gallery.pdf)
+
