@@ -37,3 +37,6 @@ Enhance some features from project 3
 ### reference
 [Standford CS 193P iPhone Application Development Assignment 5](https://github.com/duliodenis/cs193p-Fall-2017/blob/master/problemsets/Programming_Project_5_Image_Gallery.pdf)
 
+#### comment
+iPad only application
+
