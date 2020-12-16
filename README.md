@@ -1,4 +1,5 @@
-# Project40Swift
+# Stanford-CS-193P
+
 A project inspired by 100 Days of Swift
 
 ## Project 1: Concentration
